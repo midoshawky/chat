@@ -14,3 +14,5 @@ final currentUserIdProvider = Provider<String>(
 final currentUserNameProvider = Provider<String?>((ref) => null);
 
 final currentUserAvatarProvider = Provider<String?>((ref) => null);
+
+final currentRoomIdProvider = Provider<String?>((ref) => null);

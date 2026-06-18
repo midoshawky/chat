@@ -4,13 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pomac_chat_app/pomac_chat_app.dart';
 
 void main() {
-  String? token, userId, name, avatar;
+  String? token, userId, name, avatar, roomId;
   if (kIsWeb) {
     final params = Uri.base.queryParameters;
     token = params['token'];
-    userId = params['userId'];
-    name = params['name'];
-    avatar = params['avatar'];
+    userId = params['user_id'];
+    name = params['user_name'];
+    avatar = params['avatar_url'];
+    roomId = params['room_id'];
   }
   runApp(
      ProviderScope(

@@ -16,6 +16,7 @@ class PomacChatApp extends StatefulWidget {
     required this.currentUserId,
     this.currentUserName,
     this.currentUserAvatar,
+    this.roomId,
     this.onError,
     this.theme,
   });
@@ -26,6 +27,7 @@ class PomacChatApp extends StatefulWidget {
   final String currentUserId;
   final String? currentUserName;
   final String? currentUserAvatar;
+  final String? roomId;
   final void Function(Object error)? onError;
   final PomacChatTheme? theme;
 
@@ -62,7 +64,8 @@ class _PomacChatAppState extends State<PomacChatApp> {
       _chatService.initialize();
     } else if (widget.currentUserId != old.currentUserId ||
         widget.currentUserName != old.currentUserName ||
-        widget.currentUserAvatar != old.currentUserAvatar) {
+        widget.currentUserAvatar != old.currentUserAvatar ||
+        widget.roomId != old.roomId) {
       // Only user identity fields changed — update overrides in place
       // without reconnecting.
       _container.updateOverrides([
@@ -70,6 +73,7 @@ class _PomacChatAppState extends State<PomacChatApp> {
         currentUserIdProvider.overrideWithValue(widget.currentUserId),
         currentUserNameProvider.overrideWithValue(widget.currentUserName),
         currentUserAvatarProvider.overrideWithValue(widget.currentUserAvatar),
+        currentRoomIdProvider.overrideWithValue(widget.roomId),
       ]);
     }
   }
@@ -93,6 +97,7 @@ class _PomacChatAppState extends State<PomacChatApp> {
           currentUserIdProvider.overrideWithValue(widget.currentUserId),
           currentUserNameProvider.overrideWithValue(widget.currentUserName),
           currentUserAvatarProvider.overrideWithValue(widget.currentUserAvatar),
+          currentRoomIdProvider.overrideWithValue(widget.roomId),
         ],
       );
 

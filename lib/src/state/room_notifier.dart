@@ -49,7 +49,13 @@ class RoomNotifier extends AutoDisposeAsyncNotifier<RoomListState> {
     _msgSub = service.onMessageCreated.listen(_onMessageCreated);
 
     final result = await service.getRooms();
-    return RoomListState(rooms: result.data);
+    final initialRoomId = ref.read(currentRoomIdProvider);
+    final hasInitialRoom =
+        initialRoomId != null && result.data.any((r) => r.id == initialRoomId);
+    return RoomListState(
+      rooms: result.data,
+      activeRoomId: hasInitialRoom ? initialRoomId : null,
+    );
   }
 
   Future<void> load() async {
