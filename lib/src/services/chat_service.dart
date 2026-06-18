@@ -51,4 +51,9 @@ class ChatService {
       socket.onMessageDelivered;
   Stream<MessageRead> get onMessageRead => socket.onMessageRead;
   Stream<TypingEvent> get onTyping => socket.onTyping;
+
+  Future<List<Map<String, dynamic>>> uploadFiles(
+    List<({String filename, List<int> bytes})> files,
+  ) =>
+      http.uploadFiles(files);
 }

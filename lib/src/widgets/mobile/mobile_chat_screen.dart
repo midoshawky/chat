@@ -160,10 +160,14 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
               ),
             ),
             ChatInputBar(
-              onSend: (text) => ref
+              onSend: (text, attachments, {type = 'text'}) => ref
                   .read(
                       chatNotifierProvider(widget.roomId).notifier)
-                  .sendMessage(text),
+                  .sendMessage(
+                    text,
+                    type: type,
+                    attachments: attachments.isEmpty ? null : attachments,
+                  ),
               onTyping: () => ref
                   .read(
                       chatNotifierProvider(widget.roomId).notifier)

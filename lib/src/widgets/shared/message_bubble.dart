@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/message.dart';
+import '../../models/message_attachment.dart';
 import '../../theme/chat_theme.dart';
 import 'user_avatar.dart';
 
@@ -54,13 +56,19 @@ class MessageBubble extends StatelessWidget {
                     if (message.replyPreview != null)
                       _ReplyPreview(
                           preview: message.replyPreview!, theme: theme),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        message.content,
-                        style: theme.bubbleTextStyle,
+                    if (message.attachments.isNotEmpty)
+                      ConstrainedBox(constraints: BoxConstraints(minWidth: 300),child:_AttachmentList(
+                        attachments: message.attachments,
+                        theme: theme,
+                      )),
+                    if (message.content.isNotEmpty)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          message.content,
+                          style: theme.bubbleTextStyle,
+                        ),
                       ),
-                    ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -153,4 +161,357 @@ class _ReplyPreview extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
       );
+}
+
+class _AttachmentList extends StatelessWidget {
+  const _AttachmentList({required this.attachments, required this.theme});
+
+  final List<MessageAttachment> attachments;
+  final PomacChatTheme theme;
+
+  static bool _isImage(MessageAttachment a) {
+    final mime = a.mimeType?.toLowerCase() ?? '';
+    if (mime.startsWith('image/')) return true;
+    final url = a.url.toLowerCase().split('?').first;
+    return url.endsWith('.jpg') ||
+        url.endsWith('.jpeg') ||
+        url.endsWith('.png') ||
+        url.endsWith('.gif') ||
+        url.endsWith('.webp');
+  }
+
+  static String _formatSize(int? bytes) {
+    if (bytes == null) return '';
+    if (bytes < 1024) return '${bytes}B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)}KB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final images = attachments.where(_isImage).toList();
+    final files = attachments.where((a) => !_isImage(a)).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (images.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: _ImageGrid(images: images),
+          ),
+        ...files.map((a) => _FileAttachment(
+              attachment: a,
+              theme: theme,
+              formatSize: _formatSize,
+            )),
+      ],
+    );
+  }
+}
+
+// ── Image grid ────────────────────────────────────────────────────────────────
+
+class _ImageGrid extends StatelessWidget {
+  const _ImageGrid({required this.images});
+
+  final List<MessageAttachment> images;
+
+  static const double _gap = 3;
+  static const double _size = 290;   // total grid width/height anchor
+  static const double _cellSm = (_size - _gap) / 2; // half-size cell
+
+  void _openSlider(BuildContext context, int initialIndex) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (_) => _ImageSliderDialog(
+        urls: images.map((i) => i.url).toList(),
+        initialIndex: initialIndex,
+      ),
+    );
+  }
+
+  Widget _cell(BuildContext context, int index, {
+    double width = _cellSm,
+    double height = _cellSm,
+    int? extraCount,
+  }) {
+    return GestureDetector(
+      onTap: () => _openSlider(context, index),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              imageUrl: images[index].url,
+              fit: BoxFit.cover,
+              placeholder: (_, __) =>
+                  const ColoredBox(color: Color(0xFFE0E0E0)),
+              errorWidget: (_, __, ___) => const ColoredBox(
+                color: Color(0xFFE0E0E0),
+                child: Icon(Icons.broken_image, color: Colors.grey),
+              ),
+            ),
+            if (extraCount != null)
+              ColoredBox(
+                color: Colors.black54,
+                child: Center(
+                  child: Text(
+                    '+$extraCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final count = images.length;
+
+    if (count == 1) {
+      return SizedBox(
+        width: _size,
+        height: _size,
+        child: _cell(context, 0, width: _size, height: _size),
+      );
+    }
+
+    if (count == 2) {
+      return SizedBox(
+        width: _size,
+        height: _cellSm,
+        child: Row(
+          children: [
+            SizedBox(width: _cellSm, height: _cellSm,
+                child: _cell(context, 0)),
+            const SizedBox(width: _gap),
+            SizedBox(width: _cellSm, height: _cellSm,
+                child: _cell(context, 1)),
+          ],
+        ),
+      );
+    }
+
+    if (count == 3) {
+      return SizedBox(
+        width: _size,
+        height: _size,
+        child: Row(
+          children: [
+            SizedBox(
+              width: _cellSm,
+              height: _size,
+              child: _cell(context, 0, width: _cellSm, height: _size),
+            ),
+            const SizedBox(width: _gap),
+            Column(
+              children: [
+                SizedBox(width: _cellSm, height: _cellSm,
+                    child: _cell(context, 1)),
+                const SizedBox(height: _gap),
+                SizedBox(width: _cellSm, height: _cellSm,
+                    child: _cell(context, 2)),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    // 4+
+    final extra = count > 4 ? count - 4 : 0;
+    return SizedBox(
+      width: _size,
+      height: _size,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              SizedBox(width: _cellSm, height: _cellSm,
+                  child: _cell(context, 0)),
+              const SizedBox(width: _gap),
+              SizedBox(width: _cellSm, height: _cellSm,
+                  child: _cell(context, 1)),
+            ],
+          ),
+          const SizedBox(height: _gap),
+          Row(
+            children: [
+              SizedBox(width: _cellSm, height: _cellSm,
+                  child: _cell(context, 2)),
+              const SizedBox(width: _gap),
+              SizedBox(
+                width: _cellSm,
+                height: _cellSm,
+                child: _cell(context, 3,
+                    extraCount: extra > 0 ? extra : null),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Full-screen slider dialog ──────────────────────────────────────────────────
+
+class _ImageSliderDialog extends StatefulWidget {
+  const _ImageSliderDialog({
+    required this.urls,
+    required this.initialIndex,
+  });
+
+  final List<String> urls;
+  final int initialIndex;
+
+  @override
+  State<_ImageSliderDialog> createState() => _ImageSliderDialogState();
+}
+
+class _ImageSliderDialogState extends State<_ImageSliderDialog> {
+  late final PageController _ctrl;
+  late int _current;
+
+  @override
+  void initState() {
+    super.initState();
+    _current = widget.initialIndex;
+    _ctrl = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.black,
+      insetPadding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _ctrl,
+            itemCount: widget.urls.length,
+            onPageChanged: (i) => setState(() => _current = i),
+            itemBuilder: (_, i) => InteractiveViewer(
+              child: Center(
+                child: CachedNetworkImage(
+                  imageUrl: widget.urls[i],
+                  fit: BoxFit.contain,
+                  placeholder: (_, __) => const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                  errorWidget: (_, __, ___) => const Icon(
+                    Icons.broken_image,
+                    color: Colors.white54,
+                    size: 48,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: SafeArea(
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+          if (widget.urls.length > 1)
+            Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Text(
+                  '${_current + 1} / ${widget.urls.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FileAttachment extends StatelessWidget {
+  const _FileAttachment({
+    required this.attachment,
+    required this.theme,
+    required this.formatSize,
+  });
+
+  final MessageAttachment attachment;
+  final PomacChatTheme theme;
+  final String Function(int?) formatSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.insert_drive_file_outlined,
+                size: 20, color: theme.mutedText),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    attachment.name ?? 'File',
+                    style: TextStyle(
+                      fontFamily: theme.fontFamily,
+                      fontSize: 13,
+                      color: theme.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (attachment.size != null)
+                    Text(
+                      formatSize(attachment.size),
+                      style: TextStyle(
+                        fontFamily: theme.fontFamily,
+                        fontSize: 11,
+                        color: theme.mutedText,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -34,6 +34,7 @@ class _RoomListPanelState extends ConsumerState<RoomListPanel> {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: theme.strokeBorder),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         padding: const EdgeInsets.all(8),

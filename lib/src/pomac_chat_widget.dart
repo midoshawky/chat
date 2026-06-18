@@ -93,14 +93,18 @@ class _PomacChatAppState extends State<PomacChatApp> {
       container: _container,
       child: PomacChatThemeProvider(
         theme: widget.theme ?? const PomacChatTheme(),
-        child: LayoutBuilder(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white
+          ),
+          child: LayoutBuilder(
           builder: (ctx, constraints) {
             final isWide = kIsWeb && constraints.maxWidth >= 900;
             return isWide
                 ? const WebChatLayout()
                 : const MobileChatLayout();
           },
-        ),
+        ),),
       ),
     );
   }

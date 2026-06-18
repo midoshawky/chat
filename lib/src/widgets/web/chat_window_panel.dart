@@ -85,9 +85,13 @@ class _ChatWindowPanelState extends ConsumerState<ChatWindowPanel> {
                 ),
               ),
               ChatInputBar(
-                onSend: (text) => ref
+                onSend: (text, attachments, {type = 'text'}) => ref
                     .read(chatNotifierProvider(activeRoomId).notifier)
-                    .sendMessage(text),
+                    .sendMessage(
+                      text,
+                      type: type,
+                      attachments: attachments.isEmpty ? null : attachments,
+                    ),
                 onTyping: () => ref
                     .read(chatNotifierProvider(activeRoomId).notifier)
                     .notifyTyping(),

@@ -99,18 +99,18 @@ class HttpService {
   }
 
   Future<List<Map<String, dynamic>>> uploadFiles(
-    List<String> filePaths,
+    List<({String filename, List<int> bytes})> files,
   ) async {
     final formData = FormData();
     formData.fields.add(const MapEntry('category', 'message'));
-    for (final path in filePaths) {
+    for (final f in files) {
       formData.files.add(MapEntry(
         'files',
-        await MultipartFile.fromFile(path),
+        MultipartFile.fromBytes(f.bytes, filename: f.filename),
       ));
     }
     final res = await _dio.post('/files/upload', data: formData);
-    return (res.data as List<dynamic>)
+    return (res.data["data"] as List<dynamic>)
         .map((e) => e as Map<String, dynamic>)
         .toList();
   }
