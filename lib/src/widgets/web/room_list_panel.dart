@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jovial_svg/jovial_svg.dart';
 import '../../state/room_notifier.dart';
 import '../../state/providers.dart';
 import '../../theme/chat_theme.dart';
@@ -57,12 +59,38 @@ class _RoomListPanelState extends ConsumerState<RoomListPanel> {
                 data: (state) {
                   if (state.rooms.isEmpty) {
                     return Center(
-                      child: Text(
-                        'No conversations',
-                        style: TextStyle(
-                            fontFamily: theme.fontFamily,
-                            color: theme.mutedText),
-                      ),
+                      child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                  width: 160,
+                  height: 160,
+                  child: ScalableImageWidget.fromSISource(
+                    si: ScalableImageSource.fromSvg(
+                      rootBundle,
+                      'packages/pomac_chat_app/assets/icons/no_conversations.svg',
+                    ),
+                    currentColor: theme.textDark,
+                  ),
+                ),
+                SizedBox(height: 26,),
+                        Text(
+                      'No conversations to show',
+                      style: TextStyle(
+                          fontFamily: theme.fontFamily,
+                          color: theme.textPrimary),
+                    ),
+                    SizedBox(height: 4,),
+                      Text(
+                      'Search by recipient name, message content, or conversation name',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: theme.fontFamily,
+                          
+                          color: theme.mutedText),
+                    ),
+                      ],
+                    ),
                     );
                   }
                   return MediaQuery.removePadding(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jovial_svg/jovial_svg.dart';
 import '../../state/room_notifier.dart';
 import '../../state/providers.dart';
 import '../../theme/chat_theme.dart';
@@ -30,6 +32,8 @@ class _MobileRoomListScreenState
   Widget build(BuildContext context) {
     final theme = PomacChatTheme.of(context);
     final currentUserId = ref.watch(currentUserIdProvider);
+    final currentUserName = ref.watch(currentUserNameProvider);
+    final currentUserAvatar = ref.watch(currentUserAvatarProvider);
     final roomState = ref.watch(roomNotifierProvider);
 
     return Scaffold(
@@ -41,7 +45,8 @@ class _MobileRoomListScreenState
         leading: Padding(
           padding: const EdgeInsets.only(left: 16),
           child: UserAvatar(
-            name: currentUserId,
+            name: currentUserName ?? currentUserId,
+            avatarUrl: currentUserAvatar,
             size: 40,
           ),
         ),
@@ -80,11 +85,28 @@ class _MobileRoomListScreenState
               data: (state) {
                 if (state.rooms.isEmpty) {
                   return Center(
-                    child: Text(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: ScalableImageWidget.fromSISource(
+                    si: ScalableImageSource.fromSvg(
+                      rootBundle,
+                      'packages/pomac_chat_app/assets/icons/no_conversations.svg',
+                    ),
+                    currentColor: theme.textDark,
+                  ),
+                ),
+                SizedBox(height: 12,),
+                        Text(
                       'No conversations yet',
                       style: TextStyle(
                           fontFamily: theme.fontFamily,
                           color: theme.mutedText),
+                    )
+                      ],
                     ),
                   );
                 }

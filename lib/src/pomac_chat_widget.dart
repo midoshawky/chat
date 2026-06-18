@@ -14,6 +14,8 @@ class PomacChatApp extends StatefulWidget {
     required this.baseUrl,
     required this.socketUrl,
     required this.currentUserId,
+    this.currentUserName,
+    this.currentUserAvatar,
     this.onError,
     this.theme,
   });
@@ -22,6 +24,8 @@ class PomacChatApp extends StatefulWidget {
   final String baseUrl;
   final String socketUrl;
   final String currentUserId;
+  final String? currentUserName;
+  final String? currentUserAvatar;
   final void Function(Object error)? onError;
   final PomacChatTheme? theme;
 
@@ -39,6 +43,8 @@ class _PomacChatAppState extends State<PomacChatApp> {
     _chatService = _buildService();
     _container = _buildContainer();
     _chatService.initialize();
+
+    print("Current User Avatar ${widget.currentUserAvatar}");
   }
 
   @override
@@ -54,11 +60,16 @@ class _PomacChatAppState extends State<PomacChatApp> {
       _chatService = _buildService();
       _container = _buildContainer();
       _chatService.initialize();
-    } else if (widget.currentUserId != old.currentUserId) {
-      // Only userId changed — update overrides in place without reconnecting.
+    } else if (widget.currentUserId != old.currentUserId ||
+        widget.currentUserName != old.currentUserName ||
+        widget.currentUserAvatar != old.currentUserAvatar) {
+      // Only user identity fields changed — update overrides in place
+      // without reconnecting.
       _container.updateOverrides([
         chatServiceProvider.overrideWithValue(_chatService),
         currentUserIdProvider.overrideWithValue(widget.currentUserId),
+        currentUserNameProvider.overrideWithValue(widget.currentUserName),
+        currentUserAvatarProvider.overrideWithValue(widget.currentUserAvatar),
       ]);
     }
   }
@@ -80,6 +91,8 @@ class _PomacChatAppState extends State<PomacChatApp> {
         overrides: [
           chatServiceProvider.overrideWithValue(_chatService),
           currentUserIdProvider.overrideWithValue(widget.currentUserId),
+          currentUserNameProvider.overrideWithValue(widget.currentUserName),
+          currentUserAvatarProvider.overrideWithValue(widget.currentUserAvatar),
         ],
       );
 

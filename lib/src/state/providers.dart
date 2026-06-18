@@ -10,3 +10,7 @@ final currentUserIdProvider = Provider<String>(
   (ref) => throw UnimplementedError(
       'currentUserIdProvider must be overridden in ProviderScope'),
 );
+
+final currentUserNameProvider = Provider<String?>((ref) => null);
+
+final currentUserAvatarProvider = Provider<String?>((ref) => null);

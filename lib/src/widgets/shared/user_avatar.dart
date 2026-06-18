@@ -25,7 +25,7 @@ class UserAvatar extends StatelessWidget {
 
     Widget avatar = CircleAvatar(
       radius: size / 2,
-      backgroundColor: theme.primary.withValues(alpha: 0.15),
+      backgroundColor: theme.primary.withValues(),
       child: avatarUrl != null && avatarUrl!.isNotEmpty
           ? ClipOval(
               child: CachedNetworkImage(
@@ -87,7 +87,7 @@ class _Initial extends StatelessWidget {
         style: TextStyle(
           fontFamily: theme.fontFamily,
           fontSize: size * 0.45,
-          color: theme.primary,
+          color: Colors.white,
           fontWeight: FontWeight.w500,
         ),
       )

@@ -1,15 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pomac_chat_app/pomac_chat_app.dart';
 
 void main() {
-  var token = Uri.base.queryParameters["token"];
-  var userId = Uri.base.queryParameters["userId"];
+  String? token, userId, name, avatar;
+  if (kIsWeb) {
+    final params = Uri.base.queryParameters;
+    token = params['token'];
+    userId = params['userId'];
+    name = params['name'];
+    avatar = params['avatar'];
+  }
   runApp(
      ProviderScope(
       child: ExampleApp(
         token: token??'',
         currentUserId: userId??'',
+        currentUserName: name,
+        currentUserAvatar: avatar,
       ),
     ),
   );
@@ -20,12 +29,16 @@ class ExampleApp extends StatelessWidget {
     super.key,
     required this.token,
     required this.currentUserId,
+    this.currentUserName,
+    this.currentUserAvatar,
     this.baseUrl = 'https://dev-backend-shuwier-chat.pomac.info',
     this.socketUrl = 'https://dev-backend-shuwier-chat.pomac.info:443',
   });
 
   final String token;
   final String currentUserId;
+  final String? currentUserName;
+  final String? currentUserAvatar;
   final String baseUrl;
   final String socketUrl;
 
@@ -47,6 +60,8 @@ class ExampleApp extends StatelessWidget {
             baseUrl: baseUrl,
             socketUrl: socketUrl,
             currentUserId: currentUserId,
+            currentUserName: currentUserName,
+            currentUserAvatar: currentUserAvatar,
             onError: (error) {
               debugPrint('Chat error: $error');
             },
