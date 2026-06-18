@@ -10,6 +10,14 @@ import 'package:jovial_svg/jovial_svg.dart';
 import '../../state/providers.dart';
 import '../../theme/chat_theme.dart';
 
+final _emailRegex = RegExp(
+  r"[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+",
+);
+final _phoneRegex = RegExp(r'(\+?\d[\d\-.\s()]{6,}\d)');
+
+bool _containsContactInfo(String text) =>
+    _emailRegex.hasMatch(text) || _phoneRegex.hasMatch(text);
+
 class ChatInputBar extends ConsumerStatefulWidget {
   const ChatInputBar({
     super.key,
@@ -37,6 +45,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
   final _controller = TextEditingController();
   final _picker = ImagePicker();
   bool _hasText = false;
+  bool _hasInvalidContent = false;
   final List<_PendingAttachment> _attachments = [];
 
   @override
@@ -46,7 +55,8 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
   }
 
   bool get _canSend =>
-      _hasText || _attachments.any((a) => a.isReady);
+      (_hasText || _attachments.any((a) => a.isReady)) &&
+      !_hasInvalidContent;
 
   Future<void> _pickImages() async {
     final picked = await _picker.pickMultiImage();
@@ -96,6 +106,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     _controller.clear();
     setState(() {
       _hasText = false;
+      _hasInvalidContent = false;
       _attachments.clear();
     });
   }
@@ -107,6 +118,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (_hasInvalidContent) _ContactInfoWarningBanner(theme: theme),
         if (_attachments.isNotEmpty) _AttachmentPreviewStrip(
           attachments: _attachments,
           onRemove: _removeAttachment,
@@ -140,7 +152,13 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
                   ),
                   onChanged: (v) {
                     final has = v.trim().isNotEmpty;
-                    if (has != _hasText) setState(() => _hasText = has);
+                    final invalid = _containsContactInfo(v);
+                    if (has != _hasText || invalid != _hasInvalidContent) {
+                      setState(() {
+                        _hasText = has;
+                        _hasInvalidContent = invalid;
+                      });
+                    }
                     widget.onTyping?.call();
                   },
                   onSubmitted: (_) => _handleSend(),
@@ -187,6 +205,30 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
       ],
     );
   }
+}
+
+class _ContactInfoWarningBanner extends StatelessWidget {
+  const _ContactInfoWarningBanner({required this.theme});
+
+  static const _errorColor = Color(0xFFE57373);
+
+  final PomacChatTheme theme;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: double.infinity,
+        color: theme.backgroundCard,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Text(
+          'Messages cannot contain email addresses or phone numbers',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: theme.fontFamily,
+            fontSize: 13,
+            color: _errorColor,
+          ),
+        ),
+      );
 }
 
 class _AttachmentPreviewStrip extends StatelessWidget {
