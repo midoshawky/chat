@@ -20,6 +20,7 @@ void main() {
         currentUserId: userId??'',
         currentUserName: name,
         currentUserAvatar: avatar,
+        roomId:roomId
       ),
     ),
   );
@@ -32,6 +33,7 @@ class ExampleApp extends StatelessWidget {
     required this.currentUserId,
     this.currentUserName,
     this.currentUserAvatar,
+    this.roomId,
     this.baseUrl = 'https://dev-backend-shuwier-chat.pomac.info',
     this.socketUrl = 'https://dev-backend-shuwier-chat.pomac.info:443',
   });
@@ -40,6 +42,7 @@ class ExampleApp extends StatelessWidget {
   final String currentUserId;
   final String? currentUserName;
   final String? currentUserAvatar;
+  final String? roomId;
   final String baseUrl;
   final String socketUrl;
 
@@ -63,6 +66,7 @@ class ExampleApp extends StatelessWidget {
             currentUserId: currentUserId,
             currentUserName: currentUserName,
             currentUserAvatar: currentUserAvatar,
+            roomId: roomId,
             onError: (error) {
               debugPrint('Chat error: $error');
             },
