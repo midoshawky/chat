@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../theme/chat_theme.dart';
@@ -28,17 +29,30 @@ class UserAvatar extends StatelessWidget {
       backgroundColor: theme.primary.withValues(),
       child: avatarUrl != null && avatarUrl!.isNotEmpty
           ? ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: avatarUrl!,
-                width: size,
-                height: size,
-                fit: BoxFit.cover,
-                errorWidget: (_, __, ___) => _Initial(
-                  initial: initial,
-                  size: size,
-                  theme: theme,
-                ),
-              ),
+              child: kIsWeb
+                  ? Image.network(
+                      avatarUrl!,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                      webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
+                      errorBuilder: (_, __, ___) => _Initial(
+                        initial: initial,
+                        size: size,
+                        theme: theme,
+                      ),
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: avatarUrl!,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => _Initial(
+                        initial: initial,
+                        size: size,
+                        theme: theme,
+                      ),
+                    ),
             )
           : _Initial(initial: initial, size: size, theme: theme),
     );

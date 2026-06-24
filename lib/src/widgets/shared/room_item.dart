@@ -19,7 +19,7 @@ class RoomItem extends StatelessWidget {
   final VoidCallback onTap;
   final bool isActive;
   final bool isMobile;
-
+  
   @override
   Widget build(BuildContext context) {
     final theme = PomacChatTheme.of(context);
@@ -28,12 +28,13 @@ class RoomItem extends StatelessWidget {
     final timestamp = room.lastMessageAt != null
         ? _formatTime(room.lastMessageAt!)
         : '';
-
+    final hasNewMessage = (room.countUnreadedMessage??0) > 0;
+    print('Room $lastMsgText $hasNewMessage');
     Widget content = InkWell(
       onTap: onTap,
       child: Container(
         height: isMobile ? 92 : 92,
-        color: isActive && !isMobile ? theme.activeBg : Colors.transparent,
+        color: hasNewMessage || (isActive && !isMobile) ? theme.activeBg : Colors.transparent,
         child: Row(
           children: [
             if (isActive && !isMobile)
@@ -50,7 +51,7 @@ class RoomItem extends StatelessWidget {
                   border: Border(
                     bottom: BorderSide(color: theme.strokeBorder),
                   ),
-                  color: isActive && !isMobile
+                  color: hasNewMessage || (isActive && !isMobile)
                       ? theme.activeBg
                       : theme.backgroundCard,
                 ),

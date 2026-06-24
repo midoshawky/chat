@@ -37,16 +37,23 @@ class RoomListState {
 class RoomNotifier extends AutoDisposeAsyncNotifier<RoomListState> {
   Timer? _searchDebounce;
   StreamSubscription<Message>? _msgSub;
+  StreamSubscription<String>? _roomNewMsgSub;
 
   @override
   Future<RoomListState> build() async {
     ref.onDispose(() {
       _searchDebounce?.cancel();
       _msgSub?.cancel();
+      _roomNewMsgSub?.cancel();
     });
 
     final service = ref.read(chatServiceProvider);
     _msgSub = service.onMessageCreated.listen(_onMessageCreated);
+    _roomNewMsgSub = service.onRoomNewMessage.listen((_) async {
+      // Refresh rooms list when new message arrives in a room (no loading indicator)
+      print('[RoomNotifier] room:new-message received, refreshing rooms list');
+      await load(showLoading: false);
+    });
 
     final result = await service.getRooms();
     final initialRoomId = ref.read(currentRoomIdProvider);
@@ -58,12 +65,18 @@ class RoomNotifier extends AutoDisposeAsyncNotifier<RoomListState> {
     );
   }
 
-  Future<void> load() async {
-    state = const AsyncLoading();
+  Future<void> load({bool showLoading = true}) async {
+    if (showLoading) {
+      state = const AsyncLoading();
+    }
     state = await AsyncValue.guard(() async {
       final service = ref.read(chatServiceProvider);
       final result = await service.getRooms();
-      return RoomListState(rooms: result.data);
+      final current = state.valueOrNull;
+      return RoomListState(
+        rooms: result.data,
+        activeRoomId: current?.activeRoomId,
+      );
     });
   }
 

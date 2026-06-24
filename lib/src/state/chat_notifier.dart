@@ -80,9 +80,9 @@ class ChatNotifier extends AutoDisposeFamilyAsyncNotifier<ChatState, String> {
     service.socket.markRead(roomId);
 
     _subscribeToSocket(roomId);
-
+    
     return ChatState(
-      room: room,
+      room: room.copyWith(countUnreadedMessage: 0),
       messages: msgResult.data,
       currentPage: 1,
       hasMore: msgResult.hasNext,

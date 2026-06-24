@@ -11,11 +11,13 @@ class Room {
     required this.updatedAt,
     this.lastMessage,
     this.lastMessageAt,
+    this.countUnreadedMessage
   });
 
   final String id;
   final String name;
   final String type;
+  final int? countUnreadedMessage;
   final List<RoomMember> members;
   final RoomLastMessage? lastMessage;
   final DateTime? lastMessageAt;
@@ -34,6 +36,7 @@ class Room {
         id: json['id'] as String,
         name: json['name'] as String? ?? 'Unknown',
         type: json['type'] as String,
+        countUnreadedMessage : json['countUnreadedMessage'] as int?,
         members: (json['members'] as List<dynamic>)
             .map((e) => RoomMember.fromJson(e as Map<String, dynamic>))
             .toList(),
@@ -54,6 +57,7 @@ class Room {
         'type': type,
         'members': members.map((m) => m.toJson()).toList(),
         'lastMessage': lastMessage?.toJson(),
+        'countUnreadedMessage' : countUnreadedMessage,
         'lastMessageAt': lastMessageAt?.toIso8601String(),
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
@@ -63,6 +67,7 @@ class Room {
     String? id,
     String? name,
     String? type,
+    int? countUnreadedMessage,
     List<RoomMember>? members,
     RoomLastMessage? lastMessage,
     DateTime? lastMessageAt,
@@ -78,5 +83,6 @@ class Room {
         lastMessageAt: lastMessageAt ?? this.lastMessageAt,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
+        countUnreadedMessage : countUnreadedMessage ?? this.countUnreadedMessage
       );
 }

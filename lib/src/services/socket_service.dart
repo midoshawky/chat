@@ -44,6 +44,7 @@ class SocketService {
       StreamController<MessageRead>.broadcast();
   final _typingCtrl = StreamController<TypingEvent>.broadcast();
   final _roomJoinedCtrl = StreamController<String>.broadcast();
+  final _roomNewMessageCtrl = StreamController<String>.broadcast();
   final _connectedCtrl = StreamController<void>.broadcast();
   final _disconnectedCtrl = StreamController<void>.broadcast();
   final _errorCtrl = StreamController<ChatError>.broadcast();
@@ -57,6 +58,7 @@ class SocketService {
   Stream<MessageRead> get onMessageRead => _messageReadCtrl.stream;
   Stream<TypingEvent> get onTyping => _typingCtrl.stream;
   Stream<String> get onRoomJoined => _roomJoinedCtrl.stream;
+  Stream<String> get onRoomNewMessage => _roomNewMessageCtrl.stream;
   Stream<void> get onConnected => _connectedCtrl.stream;
   Stream<void> get onDisconnected => _disconnectedCtrl.stream;
   Stream<ChatError> get onError => _errorCtrl.stream;
@@ -110,6 +112,16 @@ class SocketService {
         final roomId = d['roomId'] as String? ?? '';
         print('[Socket] room:joined roomId=$roomId');
         _roomJoinedCtrl.add(roomId);
+      })
+      ..on('room:new-message', (data) {
+        try {
+          final d = _toMap(data);
+          final roomId = d['roomId'] as String? ?? '';
+          print('[Socket] room:new-message roomId=$roomId');
+          _roomNewMessageCtrl.add(roomId);
+        } catch (e) {
+          print('[Socket] room:new-message parse error: $e | raw: $data');
+        }
       })
       ..on('message:created', (data) {
         try {
@@ -239,6 +251,7 @@ class SocketService {
     _messageReadCtrl.close();
     _typingCtrl.close();
     _roomJoinedCtrl.close();
+    _roomNewMessageCtrl.close();
     _connectedCtrl.close();
     _disconnectedCtrl.close();
     _errorCtrl.close();
