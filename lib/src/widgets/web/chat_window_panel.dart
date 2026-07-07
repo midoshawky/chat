@@ -141,7 +141,6 @@ class _ChatHeader extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Icon(Icons.more_horiz, color: theme.mutedText, size: 24),
           ],
         ),
       );
@@ -163,6 +162,10 @@ class _MessageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final messages = chatState.messages;
+
+    if (messages.isEmpty && !chatState.isTyping) {
+      return _EmptyMessages(theme: theme);
+    }
 
     return ListView.builder(
       controller: scrollController,
@@ -207,6 +210,49 @@ class _MessageList extends StatelessWidget {
 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+class _EmptyMessages extends StatelessWidget {
+  const _EmptyMessages({required this.theme});
+
+  final PomacChatTheme theme;
+
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.chat_bubble_outline,
+                size: 48,
+                color: theme.mutedText,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'No messages yet',
+                style: TextStyle(
+                  fontFamily: theme.fontFamily,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Say hello to start the conversation',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: theme.fontFamily,
+                  fontSize: 13,
+                  color: theme.mutedText,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
 }
 
 class _EmptyState extends StatelessWidget {

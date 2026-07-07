@@ -72,15 +72,14 @@ class SocketService {
 
   void connect() {
     _socket = io.io(
-      'https://dev-backend-shuwier-chat.pomac.info/',
+      'https://dev-backend-shuwier-chat.pomac.info:443',
       io.OptionBuilder()
-      .setPath('/socket.io/')
-          .setTransports([ 'polling','websocket'])
+          .setPath('/socket.io/')
+          .setTransports(['polling', 'websocket'])
           .enableAutoConnect()
           .enableReconnection()
           .setReconnectionAttempts(double.infinity)
           .setReconnectionDelay(2000)
-          .enableForceNew()
           .setAuth({'token': _token})
           .build(),
     );

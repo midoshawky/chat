@@ -16,8 +16,8 @@ void main() {
   runApp(
      ProviderScope(
       child: ExampleApp(
-        token: token??'',
-        currentUserId: userId??'',
+        token: token??'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2Rldi1iYWNrZW5kLXNodXdpZXIucG9tYWMuaW5mby9hcGkvYXV0aC9sb2dpbiIsImlhdCI6MTc4MjI4NTUzNSwiZXhwIjoxNzgyMzE3OTM1LCJuYmYiOjE3ODIyODU1MzUsImp0aSI6IlJPUU5vUWNMYm1aSXprd00iLCJzdWIiOiIxOTIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwiaWQiOjE5MiwidXNlcm5hbWUiOiJuZXdfdGVzdDEyNTgiLCJ0b2tlbl92ZXJzaW9uIjoxLCJ0eXBlIjoiZnJlZWxhbmNlciIsIm5hbWUiOiJBaG1lZCIsImF2YXRhciI6Imh0dHBzOi8vZGV2LWJhY2tlbmQtc2h1d2llci5wb21hYy5pbmZvL3N0b3JhZ2UvcHJvZmlsZXMvNjliN2UwY2Q1ZDQ1Mi5qcGcifQ.aDJ-zJy-hQmGStLPR5LEtRJv-_cqVt9F4eJyVLRJgYU',
+        currentUserId: userId??'192',
         currentUserName: name,
         currentUserAvatar: avatar,
         roomId:roomId

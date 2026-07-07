@@ -12,6 +12,8 @@ dependencies:
   flutter_riverpod: ^2.6.1
   pomac_chat_app:
     path: ../
+dependency_overrides: 
+  flutter_image_compress: ^2.4.0
 
 dev_dependencies:
   flutter_test:

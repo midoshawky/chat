@@ -129,6 +129,10 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border(top: BorderSide(color: theme.strokeBorder)),
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+            ),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(

@@ -8,7 +8,9 @@ class WebChatLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return const SafeArea(
+      minimum: EdgeInsets.all(16),
+      child:Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RoomListPanel(),
@@ -17,6 +19,6 @@ class WebChatLayout extends StatelessWidget {
         SizedBox(width: 16),
         CommunicationTipsPanel(),
       ],
-    );
+    ));
   }
 }

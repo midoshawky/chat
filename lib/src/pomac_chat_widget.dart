@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/chat_service.dart';
+import 'state/chat_notifier.dart';
 import 'state/providers.dart';
+import 'state/room_notifier.dart';
 import 'theme/chat_theme.dart';
 import 'widgets/web/web_chat_layout.dart';
 import 'widgets/mobile/mobile_chat_layout.dart';
@@ -75,6 +77,14 @@ class _PomacChatAppState extends State<PomacChatApp> {
         currentUserAvatarProvider.overrideWithValue(widget.currentUserAvatar),
         currentRoomIdProvider.overrideWithValue(widget.roomId),
       ]);
+
+      if (widget.currentUserId != old.currentUserId) {
+        // Rooms/messages already cached were fetched under the previous
+        // identity — their member lists resolve "other member" relative to
+        // currentUserId, so stale cache here would misattribute avatars.
+        _container.invalidate(roomNotifierProvider);
+        _container.invalidate(chatNotifierProvider);
+      }
     }
   }
 

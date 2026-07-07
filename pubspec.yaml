@@ -30,7 +30,7 @@ dev_dependencies:
   riverpod_generator: ^2.6.1
 
 dependency_overrides: 
-flutter_image_compress: ^2.4.0
+  flutter_image_compress: ^2.4.0
 
 flutter:
   assets:
