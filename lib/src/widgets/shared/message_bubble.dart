@@ -28,8 +28,7 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment:
-            isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMine) ...[
@@ -44,8 +43,7 @@ class MessageBubble extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 320),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: isMine ? theme.sentBubble : theme.receivedBubble,
                   borderRadius: BorderRadius.circular(12),
@@ -53,14 +51,14 @@ class MessageBubble extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (message.replyPreview != null)
-                      _ReplyPreview(
-                          preview: message.replyPreview!, theme: theme),
+                    if (message.replyPreview != null) _ReplyPreview(preview: message.replyPreview!, theme: theme),
                     if (message.attachments.isNotEmpty)
-                      ConstrainedBox(constraints: BoxConstraints(minWidth: 300),child:_AttachmentList(
-                        attachments: message.attachments,
-                        theme: theme,
-                      )),
+                      ConstrainedBox(
+                          constraints: BoxConstraints(minWidth: 300),
+                          child: _AttachmentList(
+                            attachments: message.attachments,
+                            theme: theme,
+                          )),
                     if (message.content.isNotEmpty)
                       Align(
                         alignment: Alignment.centerLeft,
@@ -109,12 +107,10 @@ class _DeletedBubble extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
-          mainAxisAlignment:
-              isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: theme.strokeBorder,
                 borderRadius: BorderRadius.circular(12),
@@ -147,8 +143,7 @@ class _ReplyPreview extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(8),
-          border: Border(
-              left: BorderSide(color: theme.primary, width: 3)),
+          border: Border(left: BorderSide(color: theme.primary, width: 3)),
         ),
         child: Text(
           preview['content']?.toString() ?? '',
@@ -218,7 +213,7 @@ class _ImageGrid extends StatelessWidget {
   final List<MessageAttachment> images;
 
   static const double _gap = 3;
-  static const double _size = 290;   // total grid width/height anchor
+  static const double _size = 290; // total grid width/height anchor
   static const double _cellSm = (_size - _gap) / 2; // half-size cell
 
   void _openSlider(BuildContext context, int initialIndex) {
@@ -232,7 +227,9 @@ class _ImageGrid extends StatelessWidget {
     );
   }
 
-  Widget _cell(BuildContext context, int index, {
+  Widget _cell(
+    BuildContext context,
+    int index, {
     double width = _cellSm,
     double height = _cellSm,
     int? extraCount,
@@ -247,8 +244,7 @@ class _ImageGrid extends StatelessWidget {
             CachedNetworkImage(
               imageUrl: images[index].url,
               fit: BoxFit.cover,
-              placeholder: (_, __) =>
-                  const ColoredBox(color: Color(0xFFE0E0E0)),
+              placeholder: (_, __) => const ColoredBox(color: Color(0xFFE0E0E0)),
               errorWidget: (_, __, ___) => const ColoredBox(
                 color: Color(0xFFE0E0E0),
                 child: Icon(Icons.broken_image, color: Colors.grey),
@@ -292,11 +288,9 @@ class _ImageGrid extends StatelessWidget {
         height: _cellSm,
         child: Row(
           children: [
-            SizedBox(width: _cellSm, height: _cellSm,
-                child: _cell(context, 0)),
+            SizedBox(width: _cellSm, height: _cellSm, child: _cell(context, 0)),
             const SizedBox(width: _gap),
-            SizedBox(width: _cellSm, height: _cellSm,
-                child: _cell(context, 1)),
+            SizedBox(width: _cellSm, height: _cellSm, child: _cell(context, 1)),
           ],
         ),
       );
@@ -316,11 +310,9 @@ class _ImageGrid extends StatelessWidget {
             const SizedBox(width: _gap),
             Column(
               children: [
-                SizedBox(width: _cellSm, height: _cellSm,
-                    child: _cell(context, 1)),
+                SizedBox(width: _cellSm, height: _cellSm, child: _cell(context, 1)),
                 const SizedBox(height: _gap),
-                SizedBox(width: _cellSm, height: _cellSm,
-                    child: _cell(context, 2)),
+                SizedBox(width: _cellSm, height: _cellSm, child: _cell(context, 2)),
               ],
             ),
           ],
@@ -337,24 +329,20 @@ class _ImageGrid extends StatelessWidget {
         children: [
           Row(
             children: [
-              SizedBox(width: _cellSm, height: _cellSm,
-                  child: _cell(context, 0)),
+              SizedBox(width: _cellSm, height: _cellSm, child: _cell(context, 0)),
               const SizedBox(width: _gap),
-              SizedBox(width: _cellSm, height: _cellSm,
-                  child: _cell(context, 1)),
+              SizedBox(width: _cellSm, height: _cellSm, child: _cell(context, 1)),
             ],
           ),
           const SizedBox(height: _gap),
           Row(
             children: [
-              SizedBox(width: _cellSm, height: _cellSm,
-                  child: _cell(context, 2)),
+              SizedBox(width: _cellSm, height: _cellSm, child: _cell(context, 2)),
               const SizedBox(width: _gap),
               SizedBox(
                 width: _cellSm,
                 height: _cellSm,
-                child: _cell(context, 3,
-                    extraCount: extra > 0 ? extra : null),
+                child: _cell(context, 3, extraCount: extra > 0 ? extra : null),
               ),
             ],
           ),
@@ -450,6 +438,27 @@ class _ImageSliderDialogState extends State<_ImageSliderDialog> {
                 ),
               ),
             ),
+          PositionedDirectional(
+            start: 18,
+            end: 18,
+            top: MediaQuery.of(context).size.height / 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ///     prev
+                IconButton(
+                  onPressed: () => _ctrl.previousPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut),
+                  icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.white),
+                ),
+
+                ///     next
+                IconButton(
+                  onPressed: () => _ctrl.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut),
+                  icon: Icon(Icons.arrow_forward_ios_outlined, color: Colors.white),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
@@ -480,8 +489,7 @@ class _FileAttachment extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.insert_drive_file_outlined,
-                size: 20, color: theme.mutedText),
+            Icon(Icons.insert_drive_file_outlined, size: 20, color: theme.mutedText),
             const SizedBox(width: 6),
             Flexible(
               child: Column(
