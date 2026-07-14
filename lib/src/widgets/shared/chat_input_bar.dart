@@ -15,8 +15,7 @@ final _emailRegex = RegExp(
 );
 final _phoneRegex = RegExp(r'(\+?\d[\d\-.\s()]{6,}\d)');
 
-bool _containsContactInfo(String text) =>
-    _emailRegex.hasMatch(text) || _phoneRegex.hasMatch(text);
+bool _containsContactInfo(String text) => _emailRegex.hasMatch(text) || _phoneRegex.hasMatch(text);
 
 class ChatInputBar extends ConsumerStatefulWidget {
   const ChatInputBar({
@@ -54,9 +53,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     super.dispose();
   }
 
-  bool get _canSend =>
-      (_hasText || _attachments.any((a) => a.isReady)) &&
-      !_hasInvalidContent;
+  bool get _canSend => (_hasText || _attachments.every((a) => a.isReady)) && !_hasInvalidContent;
 
   Future<void> _pickImages() async {
     final picked = await _picker.pickMultiImage();
@@ -95,9 +92,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     final uploaded = _attachments
         .where((a) => a.isReady)
         .map((a) => {
-              'fileUrl': (a.uploadedData!['fileUrl'] ??
-                      a.uploadedData!['url'] ?? '')
-                  .toString(),
+              'fileUrl': (a.uploadedData!['fileUrl'] ?? a.uploadedData!['url'] ?? '').toString(),
             })
         .toList();
 
@@ -119,11 +114,12 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (_hasInvalidContent) _ContactInfoWarningBanner(theme: theme),
-        if (_attachments.isNotEmpty) _AttachmentPreviewStrip(
-          attachments: _attachments,
-          onRemove: _removeAttachment,
-          theme: theme,
-        ),
+        if (_attachments.isNotEmpty)
+          _AttachmentPreviewStrip(
+            attachments: _attachments,
+            onRemove: _removeAttachment,
+            theme: theme,
+          ),
         Container(
           height: 56,
           decoration: BoxDecoration(
